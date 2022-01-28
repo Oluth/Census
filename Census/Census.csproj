@@ -54,6 +54,8 @@
     <Compile Include="Entry.cs" />
     <Compile Include="Manager\ECitizenManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\DebugService.cs" />
+    <Compile Include="Service\Debug\DebugState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

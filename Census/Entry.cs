@@ -2,6 +2,7 @@
 using Census.Service;
 using Census.Service.Debug;
 using Census.Manager;
+using Census.Util.Demography;
 
 namespace Census
 {
@@ -18,7 +19,7 @@ namespace Census
         public void OnCreated(ILoading loading) { }
 
         public void OnLevelLoaded(LoadMode mode) {
-            DebugService.Log(DebugState.error, "Inhabitants: " + InternalCitizenManager.GetInhabitantCitizens());
+            DemographyUtil.PrintAgeBreakdown();
         }
 
         public void OnLevelUnloading() { }

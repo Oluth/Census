@@ -10,6 +10,8 @@ namespace Census.Manager
     {
         private static CitizenManager refManager = CitizenManager.instance;
 
+        public const byte REAL_AGEYEARS_PER_INGAME_AGE = 3;
+
         /// <summary>
         /// Prints a list of all CitizenUnit sizes as a string. For Debug purposes only.
         /// </summary>
@@ -80,7 +82,6 @@ namespace Census.Manager
                     pop += n;
                 }
             }
-            DebugService.Log(DebugState.error, pop.ToString());
             return inhabitantCitizens;
         }
 
@@ -150,7 +151,6 @@ namespace Census.Manager
             bool isTourist = HasFlag(c, Citizen.Flags.Tourist);
             bool isMovingIn = HasFlag(c, Citizen.Flags.MovingIn);
             bool isInhabitant = !isDummyTraffic && !isTourist && isCreated && !isMovingIn;
-            DebugService.Log(DebugState.info, isInhabitant.ToString());
             return isInhabitant;
         }
 

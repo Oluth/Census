@@ -1,6 +1,7 @@
 ﻿using ICities;
 using Census.Service;
 using Census.Service.Debug;
+using Census.Manager;
 
 namespace Census
 {
@@ -14,25 +15,14 @@ namespace Census
 
         string IUserMod.Description => "[Pre-Alpha] A Cities: Skylines demography tool.";
 
-        // INFO - DEBUG OUTPUTS ARE PLACEHOLDERS!
-        public void OnCreated(ILoading loading)
-        {
-            DebugService.Log(DebugState.error, "Mod created!");
+        public void OnCreated(ILoading loading) { }
+
+        public void OnLevelLoaded(LoadMode mode) {
+            DebugService.Log(DebugState.error, "Inhabitants: " + InternalCitizenManager.GetInhabitantCitizens());
         }
 
-        public void OnLevelLoaded(LoadMode mode)
-        {
-            DebugService.Log(DebugState.warning, "Level loaded!");
-        }
+        public void OnLevelUnloading() { }
 
-        public void OnLevelUnloading()
-        {
-            DebugService.Log(DebugState.warning, "Level unloaded!");
-        }
-
-        public void OnReleased()
-        {
-            DebugService.Log(DebugState.info, "Level released!");
-        }
+        public void OnReleased() { }
     }
 }

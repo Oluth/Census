@@ -20,6 +20,7 @@ namespace Census
 
         public void OnLevelLoaded(LoadMode mode) {
             DemographyUtil.PrintAgeBreakdown();
+            InternalUIManager.Instance.OpenTestWindow();
         }
 
         public void OnLevelUnloading() { }

@@ -1,5 +1,6 @@
 ﻿using Census.Service;
 using Census.Service.Debug;
+using Census.UI;
 using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Census.Manager
 {
     internal class InternalUIManager : UICustomControl
     {
-        private static InternalUIManager instance;
+        protected static InternalUIManager instance;
 
         private InternalUIManager() { }
 
@@ -27,13 +28,31 @@ namespace Census.Manager
 
         private UIView view = UIView.GetAView();
 
+        public CUIAbstractWindow AddWindow(Type windowType)
+        {
+            return view.AddUIComponent(windowType) as CUIAbstractWindow;
+        }
+
         public void OpenTestWindow()
         {
-            UIPanel panel = view.AddUIComponent(typeof(UIPanel)) as UIPanel;
-            panel.backgroundSprite = "GenericPanel";
-            panel.Show();
-            //panel.OnEnable();
-            DebugService.Log(DebugState.info, "Window has been loaded.");
+            this.AddWindow(typeof(CUITestWindow));
         }
+
+        public void Erase(UIComponent comp, UIMouseEventParameter e)
+        {
+            DebugService.Log(DebugState.error, e.position.x + ", " + e.position.y);
+            Delete(comp);
+        }
+
+        public void Delete(UIComponent w)
+        {
+            foreach (UIComponent wu in w.components) {
+                DebugService.Log(DebugState.error, "Child: " + wu.ToString());
+                Delete(wu);
+            }
+            DebugService.Log(DebugState.error, "Parent: " + w.ToString());
+            UnityEngine.GameObject.Destroy(w);
+        }
+        
     }
 }

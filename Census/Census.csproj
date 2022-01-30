@@ -58,6 +58,7 @@
     <Compile Include="Service\DebugService.cs" />
     <Compile Include="Service\Debug\DebugState.cs" />
     <Compile Include="UI\CUIAbstractWindow.cs" />
+    <Compile Include="UI\CUIPopPyramid.cs" />
     <Compile Include="UI\CUITestWindow.cs" />
     <Compile Include="Util\Demography\DemographyUtil.cs" />
   </ItemGroup>

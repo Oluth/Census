@@ -35,7 +35,7 @@ namespace Census.Manager
 
         public void OpenTestWindow()
         {
-            this.AddWindow(typeof(CUITestWindow));
+            this.AddWindow(typeof(CUIPopPyramid));
         }
 
         public void Erase(UIComponent comp, UIMouseEventParameter e)

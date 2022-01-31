@@ -16,16 +16,17 @@ namespace Census.UI
 
         protected override void Build()
         {
-            UILabel text = AddUIComponent(typeof(UILabel)) as UILabel;
+            //UILabel text = AddUIComponent(typeof(UILabel)) as UILabel;
             StringBuilder sb = new StringBuilder();
-            foreach(int i in DemographyUtil.GetAgeBreakdown(DemographyUtil.BreakdownMode.Inhabitant))
-            {
-                sb.Append(i.ToString() + ",");
-            }
-            text.text = sb.ToString();
-            DebugService.Log(DebugState.warning, "Width: " + width);
-            text.width = this.width - MARGIN_BACKUP;
-            text.wordWrap = true;
+            CreateExitButton(this);
+            //foreach(int i in DemographyUtil.GetAgeBreakdown(DemographyUtil.BreakdownMode.Inhabitant))
+            //{
+            //    sb.Append(i.ToString() + ",");
+            //}
+            //text.text = sb.ToString();
+            //DebugService.Log(DebugState.warning, "Width: " + width);
+            //text.width = this.width - MARGIN_BACKUP;
+            //text.wordWrap = true;
         }
     }
 }

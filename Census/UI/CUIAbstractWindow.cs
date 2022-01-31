@@ -23,11 +23,11 @@ namespace Census.UI
         public string Description => description;
 
         protected const string BACKGROUND_SPRITE_NAME = "GenericPanel";
-        protected const int MARGIN_BACKUP = 15;
+        protected const int PADDING_BACKUP = 15;
         protected const int DEFAULT_WIDTH = 500;
         protected const int DEFAULT_HEIGHT = 500;
 
-        public CUIAbstractWindow(string title) : base()
+        public override void Start()
         {
             this.backgroundSprite = BACKGROUND_SPRITE_NAME;
 
@@ -35,20 +35,42 @@ namespace Census.UI
             this.height = DEFAULT_HEIGHT;
 
             this.autoLayout = true;
+            this.wrapLayout = true;
+            this.clipChildren = true;
 
             UILabel titleLabel = AddUIComponent(typeof(UILabel)) as UILabel;
-            titleLabel.width = this.width - MARGIN_BACKUP;
             titleLabel.wordWrap = true;
-            Title = title;
+            titleLabel.padding.top = PADDING_BACKUP;
+            titleLabel.padding.bottom = PADDING_BACKUP;
+            titleLabel.textAlignment = UIHorizontalAlignment.Center;
+            titleLabel.anchor = UIAnchorStyle.CenterHorizontal;
 
-            titleLabel.name = string.Format("census_window_title:{0}", title);
-            titleLabel.text = title;
+            titleLabel.name = string.Format("census_window_title:{0}", Title);
+            titleLabel.text = Title;
 
-            eventClicked += InternalUIManager.Instance.Erase;
+            //eventClicked += InternalUIManager.Instance.Erase;
             isInteractive = true;
 
             Build();
             DebugService.Log(DebugState.info, string.Format("Window {0} has been loaded.", name));
+
+
+        }
+        public CUIAbstractWindow(string title) : base()
+        {
+            Title = title;
+        }
+
+        protected UIButton CreateExitButton(UIComponent comp)
+        {
+            UIButton button = comp.AddUIComponent(typeof(UIButton)) as UIButton;
+            DebugService.Log(DebugState.warning, button.parent.name);
+            button.normalFgSprite = "buttonclose";
+            button.hoveredFgSprite = "buttonclosehover";
+            button.pressedFgSprite = "buttonclosepressed";
+            button.eventClicked += InternalUIManager.Instance.EraseParent;
+            button.Show();
+            return button;
         }
 
         protected abstract void Build();

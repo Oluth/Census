@@ -44,6 +44,12 @@ namespace Census.Manager
             Delete(comp);
         }
 
+        public void EraseParent(UIComponent comp, UIMouseEventParameter e)
+        {
+            DebugService.Log(DebugState.error, e.position.x + ", " + e.position.y);
+            Delete(comp.parent);
+        }
+
         public void Delete(UIComponent w)
         {
             foreach (UIComponent wu in w.components) {
@@ -51,7 +57,7 @@ namespace Census.Manager
                 Delete(wu);
             }
             DebugService.Log(DebugState.error, "Parent: " + w.ToString());
-            UnityEngine.GameObject.Destroy(w);
+            UnityEngine.Object.Destroy(w);
         }
         
     }

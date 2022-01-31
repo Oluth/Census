@@ -172,27 +172,6 @@ namespace Census.Manager
                 bool c4 = IsInhabitant(GetCitizen(cu.m_citizen3));
                 bool c5 = IsInhabitant(GetCitizen(cu.m_citizen4));
 
-                if (c1)
-                {
-                    DebugService.Log(DebugState.warning, "ID von 'true':" + cu.m_citizen0);
-                }
-                if (c2)
-                {
-                    DebugService.Log(DebugState.warning, "ID von 'true':" + cu.m_citizen1);
-                }
-                if (c3)
-                {
-                    DebugService.Log(DebugState.warning, "ID von 'true':" + cu.m_citizen2);
-                }
-                if (c4)
-                {
-                    DebugService.Log(DebugState.warning, "ID von 'true':" + cu.m_citizen3);
-                }
-                if (c5)
-                {
-                    DebugService.Log(DebugState.warning, "ID von 'true':" + cu.m_citizen4);
-                }
-
                 return c1 || c2 || c3 || c4 || c5;
             }
         }

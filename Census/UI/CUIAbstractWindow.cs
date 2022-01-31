@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Census.UI
 {
@@ -27,8 +28,13 @@ namespace Census.UI
         protected const int DEFAULT_WIDTH = 500;
         protected const int DEFAULT_HEIGHT = 500;
 
+        private UIDragDropState dragDropState = UIDragDropState.None;
+        private Vector3 dragPos = Vector3.zero;
+
         public override void Start()
         {
+            Hide();
+            CreateExitButton(this);
             this.backgroundSprite = BACKGROUND_SPRITE_NAME;
 
             this.width = DEFAULT_WIDTH;
@@ -38,12 +44,14 @@ namespace Census.UI
             this.wrapLayout = true;
             this.clipChildren = true;
 
+
             UILabel titleLabel = AddUIComponent(typeof(UILabel)) as UILabel;
-            titleLabel.wordWrap = true;
+            titleLabel.textAlignment = UIHorizontalAlignment.Center;
+
             titleLabel.padding.top = PADDING_BACKUP;
             titleLabel.padding.bottom = PADDING_BACKUP;
-            titleLabel.textAlignment = UIHorizontalAlignment.Center;
-            titleLabel.anchor = UIAnchorStyle.CenterHorizontal;
+            
+            titleLabel.anchor = (int) UIAnchorStyle.CenterHorizontal + UIAnchorStyle.Top;
 
             titleLabel.name = string.Format("census_window_title:{0}", Title);
             titleLabel.text = Title;
@@ -52,13 +60,44 @@ namespace Census.UI
             isInteractive = true;
 
             Build();
+            Show();
             DebugService.Log(DebugState.info, string.Format("Window {0} has been loaded.", name));
-
 
         }
         public CUIAbstractWindow(string title) : base()
         {
             Title = title;
+        }
+
+        protected override void OnDragEnd(UIDragEventParameter d)
+        {
+            DebugService.Log(DebugState.error, "DragEnd!");
+            OnDragOver(d);
+            dragPos = Vector3.zero;
+            dragDropState = UIDragDropState.None;
+        }
+
+        
+        protected override void OnDragOver(UIDragEventParameter d)
+        {
+            DebugService.Log(DebugState.error, "DragOver!");
+            Vector3 newPos = absolutePosition;
+
+            float xDiff = d.position.x - dragPos.x;
+            float yDiff = d.position.y - dragPos.y;
+
+            newPos.x = this.absolutePosition.x + xDiff;
+            newPos.y = this.absolutePosition.y + yDiff;
+
+            absolutePosition = newPos;
+            dragPos = newPos;
+        }
+
+        protected override void OnDragStart(UIDragEventParameter d)
+        {
+            dragDropState = UIDragDropState.Dragging;
+            dragPos = d.position;
+            DebugService.Log(DebugState.error,"DragStart!");
         }
 
         protected UIButton CreateExitButton(UIComponent comp)

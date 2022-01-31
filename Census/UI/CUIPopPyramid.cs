@@ -18,7 +18,7 @@ namespace Census.UI
         {
             //UILabel text = AddUIComponent(typeof(UILabel)) as UILabel;
             StringBuilder sb = new StringBuilder();
-            CreateExitButton(this);
+            
             //foreach(int i in DemographyUtil.GetAgeBreakdown(DemographyUtil.BreakdownMode.Inhabitant))
             //{
             //    sb.Append(i.ToString() + ",");

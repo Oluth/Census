@@ -17,6 +17,14 @@ namespace Census.UI
     /// </summary>
     internal abstract class CUIAbstractWindow : UIPanel
     {
+        private UIDragHandle dragHandle;
+
+        public CUIAbstractWindow() : base()
+        {
+            dragHandle = (UIDragHandle) AddUIComponent(typeof(UIDragHandle));
+            dragHandle.size = parent.size;
+            dragHandle.target = parent;
+        }
 
         public string Title { get; }
 
@@ -27,9 +35,6 @@ namespace Census.UI
         protected const int PADDING_BACKUP = 15;
         protected const int DEFAULT_WIDTH = 500;
         protected const int DEFAULT_HEIGHT = 500;
-
-        private UIDragDropState dragDropState = UIDragDropState.None;
-        private Vector3 dragPos = Vector3.zero;
 
         public override void Start()
         {
@@ -64,40 +69,9 @@ namespace Census.UI
             DebugService.Log(DebugState.info, string.Format("Window {0} has been loaded.", name));
 
         }
-        public CUIAbstractWindow(string title) : base()
+        public CUIAbstractWindow(string title) : this()
         {
             Title = title;
-        }
-
-        protected override void OnDragEnd(UIDragEventParameter d)
-        {
-            DebugService.Log(DebugState.error, "DragEnd!");
-            OnDragOver(d);
-            dragPos = Vector3.zero;
-            dragDropState = UIDragDropState.None;
-        }
-
-        
-        protected override void OnDragOver(UIDragEventParameter d)
-        {
-            DebugService.Log(DebugState.error, "DragOver!");
-            Vector3 newPos = absolutePosition;
-
-            float xDiff = d.position.x - dragPos.x;
-            float yDiff = d.position.y - dragPos.y;
-
-            newPos.x = this.absolutePosition.x + xDiff;
-            newPos.y = this.absolutePosition.y + yDiff;
-
-            absolutePosition = newPos;
-            dragPos = newPos;
-        }
-
-        protected override void OnDragStart(UIDragEventParameter d)
-        {
-            dragDropState = UIDragDropState.Dragging;
-            dragPos = d.position;
-            DebugService.Log(DebugState.error,"DragStart!");
         }
 
         protected UIButton CreateExitButton(UIComponent comp)

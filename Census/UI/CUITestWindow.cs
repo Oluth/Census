@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Census.UI
 {
-    internal class CUITestWindow : CUIAbstractWindow
+    class CUITestWindow : CUIAbstractWindow
     {
         public CUITestWindow() : base("TestWindow") {
             description = "A test window for internal GUI examination.";

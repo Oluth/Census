@@ -18,10 +18,23 @@ namespace Census.Util.Demography
         public static void PrintAgeBreakdown()
         {
             int[] ageNumbers = GetAgeBreakdown(BreakdownMode.Inhabitant);
+
+            List<string> output = new List<string>();
+
+            output.Add("Average age: " + GetAverageAge(ageNumbers) + " years.");
+            output.Add("");
+
+            string[] ages = new string[ageNumbers.Length];
+
             for(int i = 0; i < ageNumbers.Length; i++)
             {
-                DebugService.Log(Service.Debug.DebugState.error, "Age " + i + ": " + ageNumbers[i].ToString() + " people.");
+                ages[i] = "Age " + i + ": " + ageNumbers[i].ToString() + " people.";
             }
+
+            Array.ForEach(ages, s => output.Add(s));
+
+            
+            IOService.Instance.WriteInFile(output.ToArray<string>(), "ageBreakdown.txt");
         }
 
         public static int[] GetAgeBreakdown(BreakdownMode mode)
@@ -38,6 +51,24 @@ namespace Census.Util.Demography
                     break;
             }
             return ageNumbers;
+        }
+
+        public static double GetAverageAge(int[] quantities)
+        {
+            int total = 0;
+
+            if(quantities == null)
+            {
+                throw new ArgumentNullException("Age array is empty!");
+            }
+            double avgAge = 0;
+            for (int i = 0; i < quantities.Length; i++)
+            {
+                avgAge += i * quantities[i];
+                total += quantities[i];
+            }
+            avgAge /= total;
+            return avgAge;
         }
     }
 }

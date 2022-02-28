@@ -15,16 +15,16 @@ namespace Census.Service
             switch(state)
             {
                 case DebugState.error:
-                    UnityEngine.Debug.LogError(msg);
+                    UnityEngine.Debug.LogError("[Census] " + msg);
                     break;
                 case DebugState.warning:
-                    UnityEngine.Debug.LogWarning(msg);
+                    UnityEngine.Debug.LogWarning("[Census] " + msg);
                     break;
                 case DebugState.info:
-                    UnityEngine.Debug.Log(msg);
+                    UnityEngine.Debug.Log("[Census] " + msg);
                     break;
                 default:
-                    UnityEngine.Debug.Log(msg);
+                    UnityEngine.Debug.Log("[Census] " + msg);
                     break;
             }
         }

@@ -30,11 +30,13 @@ namespace Census.Manager
 
         public CUIAbstractWindow AddWindow(Type windowType)
         {
+            DebugService.Log(DebugState.info, "Adding UI Component " + windowType.ToString());
             return view.AddUIComponent(windowType) as CUIAbstractWindow;
         }
 
         public void OpenTestWindow()
         {
+            DebugService.Log(DebugState.info, "Preceding OpenTestWindow.");
             this.AddWindow(typeof(CUIPopPyramid));
         }
 

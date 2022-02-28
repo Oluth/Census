@@ -12,16 +12,19 @@ namespace Census.Util.Demography
     {
         public enum BreakdownMode
         {
-            Inhabitant
+            Inhabitant_All,
+            Inhabitant_Male,
+            Inhabitant_Female
         }
 
         public static void PrintAgeBreakdown()
         {
-            int[] ageNumbers = GetAgeBreakdown(BreakdownMode.Inhabitant);
+            int[] ageNumbers = GetAgeBreakdown(BreakdownMode.Inhabitant_All);
 
             List<string> output = new List<string>();
 
-            output.Add("Average age: " + GetAverageAge(ageNumbers) + " years.");
+            output.Add("Mean age: " + GetMeanAge(ageNumbers) + " years.");
+            output.Add("Median age: " + GetMedianAge(ageNumbers) + " years.");
             output.Add("");
 
             string[] ages = new string[ageNumbers.Length];
@@ -42,6 +45,7 @@ namespace Census.Util.Demography
             int[] ageNumbers = new int[(Citizen.AGE_LIMIT_FINAL + 100) / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE];
             switch (mode)
             {
+                case BreakdownMode.Inhabitant_All:
                 default:
                     List<Citizen> citizens = InternalCitizenManager.GetInhabitantCitizens();
                     foreach (Citizen c in citizens)
@@ -53,22 +57,69 @@ namespace Census.Util.Demography
             return ageNumbers;
         }
 
-        public static double GetAverageAge(int[] quantities)
+        public static double GetMeanAge(int[] quantities)
         {
-            int total = 0;
-
-            if(quantities == null)
+            if (quantities == null)
             {
                 throw new ArgumentNullException("Age array is empty!");
             }
+            int total = GetTotalPopulation(quantities);
             double avgAge = 0;
             for (int i = 0; i < quantities.Length; i++)
             {
                 avgAge += i * quantities[i];
-                total += quantities[i];
             }
             avgAge /= total;
             return avgAge;
         }
+
+        public static double GetMedianAge(int[] quantities)
+        {
+            if (quantities == null)
+            {
+                throw new ArgumentNullException("Age array is empty!");
+            }
+            int total = GetTotalPopulation(quantities);
+            double medianAge = 0;
+            int totalCounter = 0;
+            int i = 0;
+
+            // shouldn't happen in-game
+            if(quantities.Length == 0)
+            {
+                throw new InvalidOperationException("Invalid age array length.");
+            } else
+            {
+                while (totalCounter + quantities[i] < total / 2)
+                {
+                    totalCounter += quantities[i];
+                    i++;
+                }
+                if (totalCounter * 2 == quantities.Length)
+                {
+                    medianAge = i + 0.5;
+                } else
+                {
+                    medianAge = i;
+                }
+            }
+            return medianAge;
+        }
+
+        private static int GetTotalPopulation(int[] quantities)
+        {
+            int total = 0;
+
+            try
+            {
+                foreach (int quant in quantities)
+                {
+                    total += quant;
+                }
+            } catch(Exception e) { }
+
+            return total;
+        }
+
     }
 }

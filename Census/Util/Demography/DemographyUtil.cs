@@ -10,7 +10,7 @@ namespace Census.Util.Demography
 {
     internal static class DemographyUtil
     {
-        public enum BreakdownMode
+        public enum AgeBreakdownMode
         {
             Inhabitant_All,
             Inhabitant_Male,
@@ -19,10 +19,11 @@ namespace Census.Util.Demography
 
         public static void PrintAgeBreakdown()
         {
-            int[] ageNumbers = GetAgeBreakdown(BreakdownMode.Inhabitant_All);
+            int[] ageNumbers = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Female);
 
             List<string> output = new List<string>();
 
+            output.Add("Total population: " + GetTotalPopulation(ageNumbers));
             output.Add("Mean age: " + GetMeanAge(ageNumbers) + " years.");
             output.Add("Median age: " + GetMedianAge(ageNumbers) + " years.");
             output.Add("");
@@ -40,19 +41,30 @@ namespace Census.Util.Demography
             IOService.Instance.WriteInFile(output.ToArray<string>(), "ageBreakdown.txt");
         }
 
-        public static int[] GetAgeBreakdown(BreakdownMode mode)
+        public static int[] GetAgeBreakdown(AgeBreakdownMode mode)
         {
             int[] ageNumbers = new int[(Citizen.AGE_LIMIT_FINAL + 100) / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE];
+            List<Citizen> citizens = InternalCitizenManager.GetInhabitantCitizens();
+            
+            // Filter citizens by defined breakdown mode
+            // c.GetCitizenInfo only requires a value if the Citizen struct's m_instance field is unset.
+            // This is not the case with Citizens that have already been initialized.
             switch (mode)
             {
-                case BreakdownMode.Inhabitant_All:
-                default:
-                    List<Citizen> citizens = InternalCitizenManager.GetInhabitantCitizens();
-                    foreach (Citizen c in citizens)
-                    {
-                        ageNumbers[c.Age / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE]++;
-                    }
+                case AgeBreakdownMode.Inhabitant_Male:   
+                    citizens = citizens.FindAll(c => c.GetCitizenInfo(0).m_gender == Citizen.Gender.Male);
                     break;
+                case AgeBreakdownMode.Inhabitant_Female:
+                    citizens = citizens.FindAll(c => c.GetCitizenInfo(0).m_gender == Citizen.Gender.Female);
+                    break;
+                case AgeBreakdownMode.Inhabitant_All:
+                default:
+                break;
+            }
+
+            foreach (Citizen c in citizens)
+            {
+                ageNumbers[c.Age / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE]++;
             }
             return ageNumbers;
         }

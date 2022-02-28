@@ -43,6 +43,7 @@ namespace Census.Service
         {
             foreach(string line in lines)
             {
+                Census.Service.DebugService.Log(Census.Service.Debug.DebugState.info, line);
                 sw.WriteLine(line);
             }
         }

@@ -17,14 +17,42 @@ namespace Census.Util.Demography
             Inhabitant_Female
         }
 
+        public static void PrintCSVAgeBreakdown()
+        {
+            List<string> output = new List<string>();
+
+            int[] maleAge = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Male);
+            int[] femaleAge = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Female);
+
+            output.Add("Age,Male,Female");
+
+            for(int i = 0; i < maleAge.Length; i++)
+            {
+                output.Add(i.ToString() + "," + maleAge[i].ToString() + "," + femaleAge[i].ToString());
+            }
+
+            IOService.Instance.WriteInFile(output.ToArray<string>(), "ageList.csv");
+
+        }
         public static void PrintAgeBreakdown()
         {
-            int[] ageNumbers = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Female);
+            int[] maleAge = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Male);
+            int[] femaleAge = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Female);
+            int[] ageNumbers = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_All);
+
+            int totalMale = GetTotalPopulation(maleAge);
+            int totalFemale = GetTotalPopulation(femaleAge);
+            int total = totalMale + totalFemale;
+
+            float malePerc = (float) totalMale / (float) total * 100;
 
             List<string> output = new List<string>();
 
-            output.Add("Total population: " + GetTotalPopulation(ageNumbers));
-            output.Add("Mean age: " + GetMeanAge(ageNumbers) + " years.");
+            output.Add("Total population: " + GetTotalPopulation(ageNumbers) + " (100 %)");
+            output.Add("Male population: " + GetTotalPopulation(maleAge) + " (" + Math.Round(malePerc, 2) + " %)");
+            output.Add("Female population: " + GetTotalPopulation(femaleAge) + " (" + Math.Round((100-malePerc), 2) + " %)");
+            output.Add("");
+            output.Add("Mean age: " + Math.Round(GetMeanAge(ageNumbers), 2) + " years.");
             output.Add("Median age: " + GetMedianAge(ageNumbers) + " years.");
             output.Add("");
 

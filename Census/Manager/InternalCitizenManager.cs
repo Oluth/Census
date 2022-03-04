@@ -150,7 +150,8 @@ namespace Census.Manager
             bool isCreated = HasFlag(c, Citizen.Flags.Created);
             bool isTourist = HasFlag(c, Citizen.Flags.Tourist);
             bool isMovingIn = HasFlag(c, Citizen.Flags.MovingIn);
-            bool isInhabitant = !isDummyTraffic && !isTourist && isCreated && !isMovingIn;
+            bool isDead = HasFlag(c, Citizen.Flags.Dead);
+            bool isInhabitant = !isDummyTraffic && !isTourist && isCreated && !isMovingIn && !isDead;
             return isInhabitant;
         }
 

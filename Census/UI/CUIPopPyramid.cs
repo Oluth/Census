@@ -34,6 +34,13 @@ namespace Census.UI
             //this.autoLayoutDirection = LayoutDirection.Vertical;
             this.Title = "Population Diagram";
             DebugService.Log(DebugState.info, "CUIPopPyramid: Add subBox.");
+            UIButton dumpCSV = this.AddUIComponent<UIButton>();
+            dumpCSV.text = "Dump .csv";
+            dumpCSV.eventClicked += DumpCSV;
+            dumpCSV.horizontalAlignment = UIHorizontalAlignment.Right;
+            dumpCSV.normalFgSprite = "ButtonMenu";
+            dumpCSV.hoveredFgSprite = "ButtonMenuHovered";
+            dumpCSV.pressedFgSprite = "ButtonMenuPressed";
 
             UIPanel subBox = this.AddUIComponent<UIPanel>();
             subBox.name = GenerateComponentName("subBox");
@@ -164,7 +171,13 @@ namespace Census.UI
                 text.text = sb.ToString();
                 k--;
             }
+
             
+        }
+
+        protected void DumpCSV(UIComponent component, UIMouseEventParameter mouse)
+        {
+            DemographyUtil.PrintCSVAgeBreakdown();
         }
     }
 }

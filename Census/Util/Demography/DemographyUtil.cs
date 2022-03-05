@@ -73,7 +73,8 @@ namespace Census.Util.Demography
         {
             int[] ageNumbers = new int[(Citizen.AGE_LIMIT_FINAL + 100) / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE];
             List<Citizen> citizens = InternalCitizenManager.GetInhabitantCitizens();
-            
+            DebugService.Log(Service.Debug.DebugState.warning, "Got inhabitant citizens.");
+
             // Filter citizens by defined breakdown mode
             // c.GetCitizenInfo only requires a value if the Citizen struct's m_instance field is unset.
             // This is not the case with Citizens that have already been initialized.
@@ -144,6 +145,16 @@ namespace Census.Util.Demography
                 }
             }
             return medianAge;
+        }
+
+        public static int GetMaxQuantity(int[] array)
+        {
+            int output = 0;
+            foreach (int item in array)
+            {
+                output = item > output ? item : output;
+            }
+            return output;
         }
 
         private static int GetTotalPopulation(int[] quantities)

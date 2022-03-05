@@ -61,6 +61,6 @@ namespace Census.Manager
             DebugService.Log(DebugState.error, "Parent: " + w.ToString());
             UnityEngine.Object.Destroy(w);
         }
-        
+       
     }
 }

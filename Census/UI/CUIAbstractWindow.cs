@@ -18,11 +18,22 @@ namespace Census.UI
     abstract class CUIAbstractWindow : UIPanel
     {
         private UIDragHandle dragHandle;
+        private UILabel titleLabel;
+
+        private int namedComponentCount = 0;
+
+        protected string GenerateComponentName()
+        {
+            return "Census." + this.name + "." + namedComponentCount.ToString();
+        }
+
+        protected string GenerateComponentName(string name)
+        {
+            return "Census." + this.name + "." + name;
+        }
 
         public CUIAbstractWindow() : base()
         {
-            Title = "Untitled Window";
-
             dragHandle = AddUIComponent(typeof(UIDragHandle)) as UIDragHandle;
             dragHandle.size = parent.size;
             dragHandle.target = parent;
@@ -35,9 +46,12 @@ namespace Census.UI
                 return title;
             }
 
-            private set
+            protected set
             {
                 title = value;
+                if(titleLabel != null) { 
+                    titleLabel.text = Title;
+                }
             }
         }
 
@@ -65,18 +79,25 @@ namespace Census.UI
 
             DebugService.Log(DebugState.info, "Window measurements set.");
 
-            UILabel titleLabel = AddUIComponent(typeof(UILabel)) as UILabel;
             DebugService.Log(DebugState.info, "UILabel set.");
+
+            titleLabel = AddUIComponent(typeof(UILabel)) as UILabel;
+            titleLabel.backgroundSprite = "ScrollbarTrack";
+
+            Title = "Untitled Window";
+
             titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
-            titleLabel.padding.top = PADDING_BACKUP;
-            titleLabel.padding.bottom = PADDING_BACKUP;
-            
+            titleLabel.padding.top = PADDING_BACKUP / 2;
+            titleLabel.padding.bottom = PADDING_BACKUP / 2;
+            titleLabel.padding.left = PADDING_BACKUP / 2;
+            titleLabel.padding.right = PADDING_BACKUP / 2;
+
             titleLabel.anchor = (int) UIAnchorStyle.CenterHorizontal + UIAnchorStyle.Top;
 
 
             titleLabel.name = string.Format("census_window_title:{0}", Title);
-            titleLabel.text = Title;
+
             DebugService.Log(DebugState.info, "TitleLabel set.");
 
             IOService instance = IOService.Instance;
@@ -91,10 +112,7 @@ namespace Census.UI
         }
         public CUIAbstractWindow(string title) : this()
         {
-            if (title != null)
-            {
-                this.Title = title;
-            }
+            this.Title = title;
         }
 
         protected UIButton CreateExitButton(UIComponent comp)

@@ -3,6 +3,7 @@ using Census.Service.Debug;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace Census.Manager
 {
@@ -47,6 +48,7 @@ namespace Census.Manager
             uint pop = 0;
 
             List<Citizen> inhabitantCitizens = new List<Citizen>();
+            HashSet<uint> citizenIDs = new HashSet<uint>();
 
             foreach (CitizenUnit c in levelUnits)
             {
@@ -54,34 +56,41 @@ namespace Census.Manager
                 if (GetCitizenUnitSize(c) > 0 && IsInhabitant(c))
                 {
                     uint n = 0;
-                    if(c.m_citizen0 > 0 && !inhabitantCitizens.Contains(GetCitizen(c.m_citizen0)))
+                    if(c.m_citizen0 > 0 && !citizenIDs.Contains(c.m_citizen0))
                     {
                         inhabitantCitizens.Add(GetCitizen(c.m_citizen0));
+                        citizenIDs.Add(c.m_citizen0);
                         n++;
                     }
-                    if (c.m_citizen1 > 0 && !inhabitantCitizens.Contains(GetCitizen(c.m_citizen1)))
+                    if (c.m_citizen1 > 0 && !citizenIDs.Contains(c.m_citizen1))
                     {
                         inhabitantCitizens.Add(GetCitizen(c.m_citizen1));
+                        citizenIDs.Add(c.m_citizen1);
                         n++;
                     }
-                    if (c.m_citizen2 > 0 && !inhabitantCitizens.Contains(GetCitizen(c.m_citizen2)))
+                    if (c.m_citizen2 > 0 && !citizenIDs.Contains(c.m_citizen2))
                     {
                         inhabitantCitizens.Add(GetCitizen(c.m_citizen2));
+                        citizenIDs.Add(c.m_citizen2);
                         n++;
                     }
-                    if (c.m_citizen3 > 0 && !inhabitantCitizens.Contains(GetCitizen(c.m_citizen3)))
-                    {
+                    if (c.m_citizen3 > 0 && !citizenIDs.Contains(c.m_citizen3)) 
+                    { 
                         inhabitantCitizens.Add(GetCitizen(c.m_citizen3));
+                        citizenIDs.Add(c.m_citizen3);
                         n++;
                     }
-                    if (c.m_citizen4 > 0 && !inhabitantCitizens.Contains(GetCitizen(c.m_citizen4)))
+                    if (c.m_citizen4 > 0 && !citizenIDs.Contains(c.m_citizen4))
                     {
                         inhabitantCitizens.Add(GetCitizen(c.m_citizen4));
+                        citizenIDs.Add(c.m_citizen4);
                         n++;
                     }
                     pop += n;
                 }
             }
+
+            DebugService.Log(DebugState.warning, "Inhabitant citizens: " + pop);
             return inhabitantCitizens;
         }
 
@@ -167,15 +176,78 @@ namespace Census.Manager
                 return false;
             } else
             {
+                bool rs = (cu.m_flags & CitizenUnit.Flags.Home) != 0;
                 bool c1 = IsInhabitant(GetCitizen(cu.m_citizen0));
                 bool c2 = IsInhabitant(GetCitizen(cu.m_citizen1));
                 bool c3 = IsInhabitant(GetCitizen(cu.m_citizen2));
                 bool c4 = IsInhabitant(GetCitizen(cu.m_citizen3));
                 bool c5 = IsInhabitant(GetCitizen(cu.m_citizen4));
 
-                return c1 || c2 || c3 || c4 || c5;
+                return rs && (c1 || c2 || c3 || c4 || c5);
             }
         }
+
+        public static Color32 GetColorByAge(uint age)
+        {
+            return GetCitizenAgeGroupColor(GetAgeGroupByAge(age));
+        }
+
+        public static Citizen.AgeGroup GetAgeGroupByAge(uint age)
+        {
+            Citizen.AgeGroup output;
+
+            if (age <= (double) Citizen.AGE_LIMIT_CHILD / (double) REAL_AGEYEARS_PER_INGAME_AGE)
+            {
+                output = Citizen.AgeGroup.Child;
+            } else if (age <= (double)Citizen.AGE_LIMIT_TEEN / (double)REAL_AGEYEARS_PER_INGAME_AGE)
+            {
+                output = Citizen.AgeGroup.Teen;
+            } else if (age <= (double)Citizen.AGE_LIMIT_YOUNG / (double)REAL_AGEYEARS_PER_INGAME_AGE)
+            {
+                output = Citizen.AgeGroup.Young;
+            } else if (age <= (double)Citizen.AGE_LIMIT_ADULT / (double)REAL_AGEYEARS_PER_INGAME_AGE)
+            {
+                output = Citizen.AgeGroup.Adult;
+            } else
+            {
+                output = Citizen.AgeGroup.Senior;
+            }
+
+            return output;
+        }
+
+        public static Color32 GetCitizenAgeGroupColor(Citizen.AgeGroup ageGroup)
+        {
+            Color32 output;
+
+            switch (ageGroup)
+            {
+                case Citizen.AgeGroup.Child:
+                    output = Color.yellow;
+                    break;
+
+                case Citizen.AgeGroup.Teen:
+                    output = Color.green;
+                    break;
+
+                case Citizen.AgeGroup.Young:
+                default:
+                    output = Color.white;
+                    break;
+
+                case Citizen.AgeGroup.Adult:
+                    output = Color.red;
+                    break;
+
+                case Citizen.AgeGroup.Senior:
+                    output = Color.blue;
+                    break;
+            }
+
+            return output;
+        }
+
+
 
     }
 }

@@ -18,7 +18,7 @@ namespace Census
 
         string IUserMod.Name => "Census";
 
-        string IUserMod.Description => "[Pre-Alpha] A Cities: Skylines demography tool.";
+        string IUserMod.Description => "[Alpha Preview] A Cities: Skylines demography tool. FOR TESTING PURPOSES ONLY!";
 
         public void OnCreated(ILoading loading) { }
 

@@ -17,11 +17,11 @@ namespace Census.UI
 
         public static CUIPopPyramid Instance { get; private set; }
 
-        private List<UIComponent> makeshiftTextLabels;
-        private int makeshiftMaxAge = 80;
-        private int makeshiftGranularity = 45;
-        private int makeshiftMaxCharLength = 80;
-        private char makeshiftChar = '█';
+        private List<UISprite> makeshiftBars;
+        private int makeshiftMaxAge = 100;
+        private int makeshiftGranularity = 25;
+        private int makeshiftMaxCharLength = 170;
+        private float makeshiftBarHeight = 1.5f;
 
         private UIScrollablePanel tableFrame;
         public CUIPopPyramid() { 
@@ -111,21 +111,28 @@ namespace Census.UI
             double step = (double) this.makeshiftMaxAge / (double) this.makeshiftGranularity;
 
             DebugService.Log(DebugState.warning, "Got ages.");
-            if (this.makeshiftTextLabels == null)
+
+            // Initial initialization of bars after level loading.
+            if (this.makeshiftBars == null)
             {
-                this.makeshiftTextLabels = new List<UIComponent>();
+                this.makeshiftBars = new List<UISprite>();
                 for (int i = 0; i < makeshiftGranularity; i++)
                 {
-                    UILabel text = tableFrame.AddUIComponent<UILabel>();
-                    text.name = GenerateComponentName("makeShiftLabel." + i);
-                    text.textScale = 0.3f;
-                    text.text = i.ToString();
-
-                    uint avgAge = (uint) (this.makeshiftMaxAge - i * step);
+                    UISprite bar = tableFrame.AddUIComponent<UISprite>();
+                    bar.name = GenerateComponentName("makeShiftBar." + i);
+                    bar.size = new Vector2(this.makeshiftBarHeight, 0f);
+                    bar.spriteName = "InfoDisplayFocused";
                     
-                    text.textColor = InternalCitizenManager.GetColorByAge(avgAge);
-                    makeshiftTextLabels.Add(text);
+                    uint avgAge = (uint) Math.Round(this.makeshiftMaxAge - (i + 0.5) * step);
 
+
+                    UILabel text = bar.AddUIComponent<UILabel>();
+                    text.name = bar.name + ".age";
+                    text.text = avgAge.ToString();
+                    bar.FitChildrenHorizontally();
+
+                    bar.color = InternalCitizenManager.GetColorByAge(avgAge);
+                    this.makeshiftBars.Add(bar);
                 }
             }
 
@@ -146,29 +153,25 @@ namespace Census.UI
             DebugService.Log(DebugState.warning, "MaxQuantity: " + maxQuantity);
 
 
-            int k = makeshiftTextLabels.Count - 1;
-            foreach (UILabel text in makeshiftTextLabels)
+            int k = makeshiftBars.Count - 1;
+            foreach (UISprite bar in makeshiftBars)
             {
-                StringBuilder sb = new StringBuilder();
                 DebugService.Log(DebugState.warning, quantities[k].ToString());
 
-                if (quantities[k] > 0) { 
-                double lengthQuotient = (double) maxQuantity / (double) quantities[k];
+                if (quantities[k] > 0) {
+
+                    bar.Show();
+                    double lengthQuotient = (double) maxQuantity / (double) quantities[k];
                     DebugService.Log(DebugState.warning, "LengthQuotient: " + lengthQuotient);
                     DebugService.Log(DebugState.warning, "Div of MaxChar: " + (int)Math.Ceiling(makeshiftMaxCharLength / lengthQuotient));
 
-                    for (int j = 0; j < (int)Math.Ceiling(makeshiftMaxCharLength / (double)lengthQuotient); j++)
-                    {
-                        sb.Append(makeshiftChar);
-                    }
+                    bar.width = (float) makeshiftMaxCharLength / (float) lengthQuotient;
+
 
                 } else
                 {
-                    sb.Append(' ');
+                    bar.Hide();
                 }
-
-                sb.Append(" - " + Math.Ceiling((double) k * step));
-                text.text = sb.ToString();
                 k--;
             }
 

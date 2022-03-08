@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Census.UI
@@ -14,26 +13,41 @@ namespace Census.UI
 
     /// <summary>
     /// Base class for any Census window, according to a variation of the Decorator pattern on UIComponent.
+    /// <br/><br/>
+    /// Windows are supposed to function like singletons. Since UICompoments cannot be attached after creation,
+    /// a workaround is necessary: The method <tt>UpdateInstance</tt> deletes the old instance and assigns
+    /// the new one to the static reference in the child class.
     /// </summary>
-    abstract class CUIAbstractWindow : UIPanel
+    abstract class UICensusWindow : UIPanel
     {
         private UIDragHandle dragHandle;
         private UILabel titleLabel;
 
+
         private int namedComponentCount = 0;
 
+        /// <summary>
+        /// Creates a standard component name by the pattern <tt>census.[ClassName].[indexNumber]</tt>.
+        /// </summary>
+        /// <returns>Standard component name.</returns>
         protected string GenerateComponentName()
         {
             return "Census." + this.name + "." + namedComponentCount.ToString();
         }
 
+        /// <summary>
+        /// Creates a standard component name by the pattern <tt>census.[ClassName].[name]</tt>.
+        /// </summary>
+        /// <param name="name">Custom component name.</param>
+        /// <returns>Standard component name.</returns>
         protected string GenerateComponentName(string name)
         {
             return "Census." + this.name + "." + name;
         }
 
-        public CUIAbstractWindow() : base()
+        public UICensusWindow() : base()
         {
+            /// Drag handle is attached prior to all other elements above.
             dragHandle = AddUIComponent(typeof(UIDragHandle)) as UIDragHandle;
             dragHandle.size = parent.size;
             dragHandle.target = parent;
@@ -41,6 +55,9 @@ namespace Census.UI
 
         private string title;
 
+        /// <summary>
+        /// Displayed window title.
+        /// </summary>
         public string Title { get
             {
                 return title;
@@ -55,64 +72,68 @@ namespace Census.UI
             }
         }
 
+
         protected string description;
+
+        /// <summary>
+        /// Internal description of the window.
+        /// </summary>
         public string Description => description;
 
         protected const string BACKGROUND_SPRITE_NAME = "GenericPanel";
+
+        /// <summary>
+        /// Standard padding backup.
+        /// </summary>
         protected const int PADDING_BACKUP = 15;
+
         protected const int DEFAULT_WIDTH = 500;
         protected const int DEFAULT_HEIGHT = 500;
 
+        /// <summary>
+        /// Builds general window features.
+        /// </summary>
         public override void Start()
         {
+            // Precautiously hide window.
             Hide();
-            DebugService.Log(DebugState.info, "Begin creating window in CUIAbstractWindow.");
-            CreateExitButton(this);
-            this.backgroundSprite = BACKGROUND_SPRITE_NAME;
 
+            DebugService.Log(DebugState.info, "Begin creating window in UICensusWindow.");
+
+            CreateExitButton(this);
+
+            this.backgroundSprite = BACKGROUND_SPRITE_NAME;
             this.width = DEFAULT_WIDTH;
             this.height = DEFAULT_HEIGHT;
-
             this.autoLayout = true;
             this.wrapLayout = true;
             this.clipChildren = true;
-
             DebugService.Log(DebugState.info, "Window measurements set.");
 
-            DebugService.Log(DebugState.info, "UILabel set.");
+            
 
             titleLabel = AddUIComponent(typeof(UILabel)) as UILabel;
             titleLabel.backgroundSprite = "ScrollbarTrack";
-
             Title = "Untitled Window";
-
             titleLabel.textAlignment = UIHorizontalAlignment.Center;
-
             titleLabel.padding.top = PADDING_BACKUP / 2;
             titleLabel.padding.bottom = PADDING_BACKUP / 2;
             titleLabel.padding.left = PADDING_BACKUP / 2;
             titleLabel.padding.right = PADDING_BACKUP / 2;
-
             titleLabel.anchor = (int) UIAnchorStyle.CenterHorizontal + UIAnchorStyle.Top;
-
-
             titleLabel.name = string.Format("census_window_title:{0}", Title);
-
             DebugService.Log(DebugState.info, "TitleLabel set.");
 
-            IOService instance = IOService.Instance;
 
-            DebugService.Log(DebugState.info, "IOService set.");
             isInteractive = true;
 
+            // Build child
             Build();
+
+            // Display window after complete build-up.
             Show();
             DebugService.Log(DebugState.info, string.Format("Window {0} has been loaded.", name));
 
-        }
-        public CUIAbstractWindow(string title) : this()
-        {
-            this.Title = title;
         }
 
         protected UIButton CreateExitButton(UIComponent comp)
@@ -128,7 +149,15 @@ namespace Census.UI
             return button;
         }
 
+        /// <summary>
+        /// Starting point for all window-specific code.
+        /// </summary>
         protected abstract void Build();
+
+        /// <summary>
+        /// Updates the singleton of the child class.
+        /// </summary>
+        public abstract void UpdateInstance(UICensusWindow newWindow);
 
         protected void Destroy()
         {

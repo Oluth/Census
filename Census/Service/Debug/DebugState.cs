@@ -5,6 +5,7 @@
         error, 
         warning,
         info,
-        fine
+        fine,
+        finest
     }
 }

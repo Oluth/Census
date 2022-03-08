@@ -1,8 +1,5 @@
 ﻿using ICities;
-using Census.Service;
-using Census.Service.Debug;
 using Census.Manager;
-using Census.Util.Demography;
 using Census.UI;
 
 namespace Census
@@ -13,18 +10,21 @@ namespace Census
     /// </summary>
     public sealed class Entry : IUserMod, ILoadingExtension, IThreadingExtension
     {
+        private static string ver = "0.0.0-alpha.2";
         private int frameBuffer = 120;
         private int frameBufferCount = 0;
 
-        string IUserMod.Name => "Census";
+        string IUserMod.Name => string.Format("Census [{0}]", ver);
 
         string IUserMod.Description => "[Alpha Preview] A Cities: Skylines demography tool. FOR TESTING PURPOSES ONLY!";
 
-        public void OnCreated(ILoading loading) { }
+        public void OnCreated(ILoading loading) {
+            Service.DebugService.Log(Service.Debug.DebugState.info, "Created.");
+        }
 
         public void OnLevelLoaded(LoadMode mode) {
-            InternalUIManager.Instance.OpenTestWindow();
-        }
+            InternalUIManager.Instance.AddWindowToGameView(typeof(PopPyramidWindow));
+         }
 
         public void OnLevelUnloading() { }
 
@@ -41,11 +41,15 @@ namespace Census
 
         void IThreadingExtension.OnBeforeSimulationFrame()
         {
+            bool preCondition = (frameBufferCount + 1) % frameBuffer == 0;
+            Service.DebugService.Log(Service.Debug.DebugState.finest, "Frame: " + frameBufferCount + ", " + preCondition);
             frameBufferCount++;
-            if ((frameBufferCount + 1) % frameBuffer == 0 && CUIPopPyramid.Instance != null)
+            if ((frameBufferCount + 1) % frameBuffer == 0)
             {
-                DebugService.Log(DebugState.error, "PING");
-                 CUIPopPyramid.Instance.PrintMakeshiftPopGraph();
+                Service.DebugService.Log(Service.Debug.DebugState.finest, "Refresh population window...");
+                PopPyramidWindow instance = PopPyramidWindow.Instance;
+                Service.DebugService.Log(Service.Debug.DebugState.finest, "Fetched PopPyramidWindow instance.");
+                instance.PrintMakeshiftPopGraph();
                 frameBufferCount = 0;
             }
         }

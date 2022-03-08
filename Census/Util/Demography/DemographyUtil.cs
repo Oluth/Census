@@ -4,10 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Census.Util.Demography
 {
+
+    /// <summary>
+    /// Provide the mod's demography business logic based on its managers.
+    /// </summary>
     internal static class DemographyUtil
     {
         public enum AgeBreakdownMode
@@ -17,6 +20,9 @@ namespace Census.Util.Demography
             Inhabitant_Female
         }
 
+        /// <summary>
+        /// Fetches the recent citizen data and writes the age split into a comma-separated value (.csv) file.
+        /// </summary>
         public static void PrintCSVAgeBreakdown()
         {
             List<string> output = new List<string>();
@@ -31,9 +37,13 @@ namespace Census.Util.Demography
                 output.Add(i.ToString() + "," + maleAge[i].ToString() + "," + femaleAge[i].ToString());
             }
 
-            IOService.Instance.WriteInFile(output.ToArray<string>(), "ageList.csv");
+            IOService.Instance.WriteFile(output.ToArray<string>(), "ageList.csv");
 
         }
+
+        /// <summary>
+        /// Fetches the recent citizen data and writes a verbose file with an age split into a comma-separated value (.csv) file.
+        /// </summary>
         public static void PrintAgeBreakdown()
         {
             int[] maleAge = GetAgeBreakdown(AgeBreakdownMode.Inhabitant_Male);
@@ -66,14 +76,19 @@ namespace Census.Util.Demography
             Array.ForEach(ages, s => output.Add(s));
 
             
-            IOService.Instance.WriteInFile(output.ToArray<string>(), "ageBreakdown.txt");
+            IOService.Instance.WriteFile(output.ToArray<string>(), "ageBreakdown.txt");
         }
 
+        /// <summary>
+        /// Fetches the citizen data and returns an integer array of all age cohorts.
+        /// </summary>
+        /// <param name="mode">Specification of result.</param>
+        /// <returns></returns>
         public static int[] GetAgeBreakdown(AgeBreakdownMode mode)
         {
             int[] ageNumbers = new int[(Citizen.AGE_LIMIT_FINAL + 100) / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE];
-            List<Citizen> citizens = InternalCitizenManager.GetInhabitantCitizens();
-            DebugService.Log(Service.Debug.DebugState.warning, "Got inhabitant citizens.");
+            List<Citizen> citizens = InternalCitizenManager.Instance.GetInhabitantCitizens();
+            DebugService.Log(Service.Debug.DebugState.fine, "Got inhabitant citizens.");
 
             // Filter citizens by defined breakdown mode
             // c.GetCitizenInfo only requires a value if the Citizen struct's m_instance field is unset.
@@ -90,6 +105,8 @@ namespace Census.Util.Demography
                 default:
                 break;
             }
+            DebugService.Log(Service.Debug.DebugState.fine, "Filtered citizens by " + mode.ToString() + ".");
+
 
             foreach (Citizen c in citizens)
             {
@@ -98,6 +115,12 @@ namespace Census.Util.Demography
             return ageNumbers;
         }
 
+        /// <summary>
+        /// Calculates the average (mean) age of an age array.
+        /// </summary>
+        /// <param name="quantities">Age array.</param>
+        /// <returns>Statistically mean age.</returns>
+        /// <exception cref="ArgumentNullException">Please avoid null-pointers. Thank you.</exception>
         public static double GetMeanAge(int[] quantities)
         {
             if (quantities == null)
@@ -114,6 +137,13 @@ namespace Census.Util.Demography
             return avgAge;
         }
 
+        /// <summary>
+        /// Calculates the median age of an age array.
+        /// </summary>
+        /// <param name="quantities">Age array.</param>
+        /// <returns>Statistically median age.</returns>
+        /// <exception cref="ArgumentNullException">No null-pointers.</exception>
+        /// <exception cref="InvalidOperationException">No arrays with zero length.</exception>
         public static double GetMedianAge(int[] quantities)
         {
             if (quantities == null)
@@ -167,7 +197,9 @@ namespace Census.Util.Demography
                 {
                     total += quant;
                 }
-            } catch(Exception e) { }
+            } catch(Exception e) { 
+            
+            }
 
             return total;
         }

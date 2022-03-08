@@ -7,9 +7,39 @@ using UnityEngine;
 
 namespace Census.Manager
 {
-    internal static class InternalCitizenManager
+    /// <summary>
+    /// Acquires all Citizen data from Cities: Skylines and processes values for mod use. 
+    /// <br/>
+    /// <br/>
+    /// It is preferred to be used instead of in-game managers due to SoC. 
+    /// </summary>
+    internal class InternalCitizenManager
     {
-        private static CitizenManager refManager = CitizenManager.instance;
+
+        /// <summary>
+        /// Singleton instance.
+        /// </summary>
+        protected static InternalCitizenManager instance;
+        public static InternalCitizenManager Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    DebugService.Log(DebugState.fine, "Create CitizenManager instance.");
+                    new InternalCitizenManager();
+                }
+
+                DebugService.Log(DebugState.fine, "Return instance of CitizenManager.");
+                return instance;
+            }
+        }
+
+        private InternalCitizenManager() {
+            instance = this;
+        }
+
+        private CitizenManager refManager = CitizenManager.instance;
 
         public const byte REAL_AGEYEARS_PER_INGAME_AGE = 3;
 
@@ -17,7 +47,7 @@ namespace Census.Manager
         /// Prints a list of all CitizenUnit sizes as a string. For Debug purposes only.
         /// </summary>
         /// <returns>String list of all CitizenUnit sizes.</returns>
-        public static string GetInhabitantDebugList()
+        public string GetInhabitantDebugList()
         {
             StringBuilder strg = new StringBuilder();
 
@@ -41,7 +71,7 @@ namespace Census.Manager
         /// Delivers a list of all Citizen instances that are inhabitant to the loaded level.
         /// </summary>
         /// <returns>Citizen list.</returns>
-        public static List<Citizen> GetInhabitantCitizens()
+        public List<Citizen> GetInhabitantCitizens()
         {
             CitizenUnit[] levelUnits = refManager.m_units.m_buffer;
 
@@ -99,7 +129,7 @@ namespace Census.Manager
         /// </summary>
         /// <param name="unit">CitizenUnit object.</param>
         /// <returns></returns>
-        private static byte GetCitizenUnitSize(CitizenUnit unit)
+        private byte GetCitizenUnitSize(CitizenUnit unit)
         {
             byte size = 0;
             if(unit.m_citizen0 > 0)
@@ -126,22 +156,22 @@ namespace Census.Manager
             return size;
         }
 
-        private static Citizen GetCitizen(uint id)
+        private Citizen GetCitizen(uint id)
         {
             return refManager.m_citizens.m_buffer[id];
         }
 
-        private static CitizenInstance GetCitizenInstance(Citizen c)
+        private CitizenInstance GetCitizenInstance(Citizen c)
         {
             return refManager.m_instances.m_buffer[c.m_instance];
         }
 
-        public static bool HasFlag(Citizen c, Citizen.Flags flag)
+        public bool HasFlag(Citizen c, Citizen.Flags flag)
         {
             return (c.m_flags & flag) == flag;
         }
 
-        public static bool HasFlag(CitizenInstance c, CitizenInstance.Flags flag)
+        public bool HasFlag(CitizenInstance c, CitizenInstance.Flags flag)
         {
             return (c.m_flags & flag) == flag;
         }
@@ -153,7 +183,7 @@ namespace Census.Manager
         /// </summary>
         /// <param name="c">Citizen object.</param>
         /// <returns>Inhabitance of this Citizen.</returns>
-        public static bool IsInhabitant(Citizen c)
+        public bool IsInhabitant(Citizen c)
         {
             bool isDummyTraffic = HasFlag(c, Citizen.Flags.DummyTraffic);
             bool isCreated = HasFlag(c, Citizen.Flags.Created);
@@ -169,7 +199,7 @@ namespace Census.Manager
         /// </summary>
         /// <param name="cu">CitizenUnit object.</param>
         /// <returns>Inhabitance of this CitizenUnit object.</returns>
-        public static bool IsInhabitant(CitizenUnit cu)
+        public bool IsInhabitant(CitizenUnit cu)
         {
             if(GetCitizenUnitSize(cu) == 0)
             {
@@ -187,12 +217,12 @@ namespace Census.Manager
             }
         }
 
-        public static Color32 GetColorByAge(uint age)
+        public Color32 GetColorByAge(uint age)
         {
             return GetCitizenAgeGroupColor(GetAgeGroupByAge(age));
         }
 
-        public static Citizen.AgeGroup GetAgeGroupByAge(uint age)
+        public Citizen.AgeGroup GetAgeGroupByAge(uint age)
         {
             Citizen.AgeGroup output;
 
@@ -216,7 +246,7 @@ namespace Census.Manager
             return output;
         }
 
-        public static Color32 GetCitizenAgeGroupColor(Citizen.AgeGroup ageGroup)
+        public Color32 GetCitizenAgeGroupColor(Citizen.AgeGroup ageGroup)
         {
             Color32 output;
 

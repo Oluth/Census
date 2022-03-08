@@ -8,14 +8,50 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Census.UI
 {
-    class CUIPopPyramid : CUIAbstractWindow
+
+    /// <summary>
+    /// Displays the population pyramid of the mod.
+    /// </summary>
+    class PopPyramidWindow : UICensusWindow
     {
 
-        public static CUIPopPyramid Instance { get; private set; }
+        private static PopPyramidWindow instance;
+        /// <summary>
+        /// Singleton instance.
+        /// </summary>
+        public static PopPyramidWindow Instance { 
+            get
+            {
+                if (instance == null)
+                {
+                    DebugService.Log(DebugState.finest, "Set new instance reference.");
+                    PopPyramidWindow newInstance = new PopPyramidWindow();
+                    instance = newInstance;
+                }
+                DebugService.Log(DebugState.finest, "Return instance of PopPyramidWindow.");
+                return instance;
+            }
+        }
+
+        public PopPyramidWindow() : base()
+        {
+            DebugService.Log(DebugState.finest, "Create new PopPyramidWindow.");
+        }
+
+        public override void UpdateInstance(UICensusWindow newWindow)
+        {
+            DebugService.Log(DebugState.finest, "Update Instance...");
+            if (newWindow == null)
+            {
+                ExceptionService.Instance.ThrowException(ExceptionService.Type.Severe, new ArgumentNullException("No windowinstance!"));
+            } else if (newWindow.GetType() != typeof(PopPyramidWindow)) {
+                ExceptionService.Instance.ThrowException(ExceptionService.Type.Severe, new ArgumentException("No PopPyramid instance!"));
+            }
+            instance = newWindow as PopPyramidWindow;
+        }
 
         private List<UISprite> makeshiftBars;
         private int makeshiftMaxAge = 100;
@@ -24,9 +60,6 @@ namespace Census.UI
         private float makeshiftBarHeight = 1.5f;
 
         private UIScrollablePanel tableFrame;
-        public CUIPopPyramid() { 
-        
-        }
 
         protected override void Build()
         {
@@ -96,21 +129,17 @@ namespace Census.UI
             //DebugService.Log(DebugState.warning, "Width: " + width);
             //text.width = this.width - MARGIN_BACKUP;
             //text.wordWrap = true;
-            Instance = this;
         }
 
-        private void OnPropertyChanged(UIComponent uc, UIMouseEventParameter e)
-        {
-            DebugService.Log(DebugState.warning, e.ToString());
-        }
 
         public void PrintMakeshiftPopGraph()
         {
+            DebugService.Log(DebugState.fine, "Get array of Citizen ages.");
             int[] ages = DemographyUtil.GetAgeBreakdown(DemographyUtil.AgeBreakdownMode.Inhabitant_All);
+            
+
             int[] quantities = new int[this.makeshiftGranularity];
             double step = (double) this.makeshiftMaxAge / (double) this.makeshiftGranularity;
-
-            DebugService.Log(DebugState.warning, "Got ages.");
 
             // Initial initialization of bars after level loading.
             if (this.makeshiftBars == null)
@@ -131,16 +160,19 @@ namespace Census.UI
                     text.text = avgAge.ToString();
                     bar.FitChildrenHorizontally();
 
-                    bar.color = InternalCitizenManager.GetColorByAge(avgAge);
+                    bar.color = InternalCitizenManager.Instance.GetColorByAge(avgAge);
                     this.makeshiftBars.Add(bar);
                 }
+                DebugService.Log(Service.Debug.DebugState.fine, "Constructed bars.");
             }
 
+            // Adapt width to maximum age.
             if(ages.Length < this.makeshiftMaxAge)
                 {
                     this.makeshiftMaxAge = ages.Length;
                 }
 
+            DebugService.Log(Service.Debug.DebugState.fine, "Calculate cohort size.");
             for (int i = 0; i < this.makeshiftGranularity; i++)
                 {
                 for(int j = (int) Math.Ceiling(step * i) ; j < Math.Ceiling(step * (i+1)); j++)
@@ -150,20 +182,19 @@ namespace Census.UI
             }
 
             int maxQuantity = DemographyUtil.GetMaxQuantity(quantities);
-            DebugService.Log(DebugState.warning, "MaxQuantity: " + maxQuantity);
 
-
+            DebugService.Log(Service.Debug.DebugState.fine, "Update bar width.");
             int k = makeshiftBars.Count - 1;
             foreach (UISprite bar in makeshiftBars)
             {
-                DebugService.Log(DebugState.warning, quantities[k].ToString());
+                //DebugService.Log(DebugState.warning, quantities[k].ToString());
 
                 if (quantities[k] > 0) {
 
                     bar.Show();
                     double lengthQuotient = (double) maxQuantity / (double) quantities[k];
-                    DebugService.Log(DebugState.warning, "LengthQuotient: " + lengthQuotient);
-                    DebugService.Log(DebugState.warning, "Div of MaxChar: " + (int)Math.Ceiling(makeshiftMaxCharLength / lengthQuotient));
+                    //DebugService.Log(DebugState.warning, "LengthQuotient: " + lengthQuotient);
+                    //DebugService.Log(DebugState.warning, "Div of MaxChar: " + (int)Math.Ceiling(makeshiftMaxCharLength / lengthQuotient));
 
                     bar.width = (float) makeshiftMaxCharLength / (float) lengthQuotient;
 
@@ -175,12 +206,14 @@ namespace Census.UI
                 k--;
             }
 
-            
+            DebugService.Log(Service.Debug.DebugState.info, "Updated cohort size of bars.");
+
         }
 
         protected void DumpCSV(UIComponent component, UIMouseEventParameter mouse)
         {
             DemographyUtil.PrintCSVAgeBreakdown();
+            DebugService.Log(Service.Debug.DebugState.info, "Dumped!");
         }
     }
 }

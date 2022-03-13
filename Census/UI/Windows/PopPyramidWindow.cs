@@ -18,6 +18,18 @@ namespace Census.UI
     class PopPyramidWindow : UICensusWindow
     {
 
+        public enum BarTextDisplayMode
+        {
+            Age,
+            Percentage,
+            Quantity
+        }
+
+        protected BarTextDisplayMode displayMode;
+        protected const int DISPLAYMODE_VALUECOUNT = 3;
+
+        protected UIButton changeBarText;
+
         private static PopPyramidWindow instance;
         /// <summary>
         /// Singleton instance.
@@ -54,6 +66,8 @@ namespace Census.UI
         }
 
         private List<UISprite> makeshiftBars;
+        private List<UILabel> makeshiftBarsTexts;
+
         private int makeshiftMaxAge = 100;
         private int makeshiftGranularity = 25;
         private int makeshiftMaxCharLength = 170;
@@ -70,6 +84,20 @@ namespace Census.UI
             UIButton dumpCSV = this.AddUIComponent<UIButton>();
             dumpCSV.text = "Dump .csv";
             dumpCSV.eventClicked += DumpCSV;
+            dumpCSV.horizontalAlignment = UIHorizontalAlignment.Right;
+            dumpCSV.normalFgSprite = "ButtonMenu";
+            dumpCSV.hoveredFgSprite = "ButtonMenuHovered";
+            dumpCSV.pressedFgSprite = "ButtonMenuPressed";
+
+            changeBarText = this.AddUIComponent<UIButton>();
+            changeBarText.text = "Show Percentage";
+            changeBarText.eventClicked += ChangeBarText;
+            changeBarText.horizontalAlignment = UIHorizontalAlignment.Right;
+            changeBarText.normalFgSprite = "ButtonMenu";
+            changeBarText.hoveredFgSprite = "ButtonMenuHovered";
+            changeBarText.pressedFgSprite = "ButtonMenuPressed";
+            
+
             dumpCSV.horizontalAlignment = UIHorizontalAlignment.Right;
             dumpCSV.normalFgSprite = "ButtonMenu";
             dumpCSV.hoveredFgSprite = "ButtonMenuHovered";
@@ -131,12 +159,32 @@ namespace Census.UI
             //text.wordWrap = true;
         }
 
+        private void ChangeBarText(UIComponent component, UIMouseEventParameter eventParam)
+        {
+            displayMode = (BarTextDisplayMode) (((int) displayMode + 1) % DISPLAYMODE_VALUECOUNT);
+            DebugService.Log(DebugState.error, displayMode.ToString());
+
+            switch(displayMode)
+            {
+                case BarTextDisplayMode.Age:
+                    changeBarText.text = "Show Percentage";
+                    break;
+                case BarTextDisplayMode.Percentage:
+                    changeBarText.text = "Show Total";
+                    break;
+                case BarTextDisplayMode.Quantity:
+                    changeBarText.text = "Show Age";
+                    break;
+            }
+
+            PrintPopGraph();
+        }
 
         public void PrintPopGraph()
         {
             DebugService.Log(DebugState.fine, "Get array of Citizen ages.");
             int[] ages = DemographyUtil.GetAgeBreakdown(DemographyUtil.AgeBreakdownMode.Inhabitant_All);
-            
+            int total = DemographyUtil.GetTotalQuantity(ages);
 
             int[] quantities = new int[this.makeshiftGranularity];
             double step = (double) this.makeshiftMaxAge / (double) this.makeshiftGranularity;
@@ -145,6 +193,8 @@ namespace Census.UI
             if (this.makeshiftBars == null)
             {
                 this.makeshiftBars = new List<UISprite>();
+                this.makeshiftBarsTexts = new List<UILabel>();
+
                 for (int i = 0; i < makeshiftGranularity; i++)
                 {
                     UISprite bar = tableFrame.AddUIComponent<UISprite>();
@@ -161,7 +211,9 @@ namespace Census.UI
                     bar.FitChildrenHorizontally();
 
                     bar.color = InternalCitizenManager.Instance.GetColorByAge(avgAge);
+
                     this.makeshiftBars.Add(bar);
+                    this.makeshiftBarsTexts.Add(text);
                 }
                 DebugService.Log(Service.Debug.DebugState.fine, "Constructed bars.");
             }
@@ -178,6 +230,18 @@ namespace Census.UI
                 for(int j = (int) Math.Ceiling(step * i) ; j < Math.Ceiling(step * (i+1)); j++)
                 {
                     quantities[i] += ages[j];
+                }
+                if(this.displayMode == BarTextDisplayMode.Percentage)
+                {
+                    float localPercentage = (float) quantities[i] / (float) total;
+                    makeshiftBarsTexts[makeshiftBarsTexts.Count - 1 - i].text = Math.Round(localPercentage * 100, 2).ToString() + " %";
+                } else if(this.displayMode == BarTextDisplayMode.Quantity)
+                {
+                    makeshiftBarsTexts[makeshiftBarsTexts.Count - 1 - i].text = quantities[i].ToString();
+                } else
+                {
+                    uint avgAge = (uint)Math.Round(this.makeshiftMaxAge - i * step);
+                    makeshiftBarsTexts[i].text = avgAge.ToString();
                 }
             }
 

@@ -204,5 +204,16 @@ namespace Census.Util.Demography
             return total;
         }
 
+        internal static int GetTotalQuantity(int[] ages)
+        {
+            int output = 0;
+
+            foreach(int age in ages)
+            {
+                output += age;
+            }
+
+            return output;
+        }
     }
 }

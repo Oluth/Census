@@ -1,6 +1,6 @@
 # Important Notes
 
-* This project is deployed on *.NET Framework 4.6.1*. You can download the respective executable [here from Microsoft](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks). Note that build attempts with newer frameworks have proven to fail in Cities: Skylines *(Ver. 1.14.0-f4, January 2022)*.
+* This project is deployed on *.NET Framework 3.5*. You can download the respective executable [here from Microsoft](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks). Note that build attempts with newer frameworks than 4.6.1 have proven to fail in Cities: Skylines *(Ver. 1.14.0-f4, January 2022)*.
 * In order to enhance your compilation workflow, it is recommended to add the following batch script as your post-build instruction:  
      *        mkdir "%LOCALAPPDATA%\Colossal Order\Cities_Skylines\Addons\Mods\$(SolutionName)"
             del /Q "%LOCALAPPDATA%\Colossal Order\Cities_Skylines\Addons\Mods\$(SolutionName)\*"

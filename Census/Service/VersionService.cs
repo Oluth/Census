@@ -26,7 +26,7 @@ namespace Census.Service
                     censusVersion.betaIncrement = 0;
 
                     censusVersion.isAlpha = true;
-                    censusVersion.alphaIncrement = 3;
+                    censusVersion.alphaIncrement = 4;
 
                     censusVersion.isHotfix = false;
                     censusVersion.hotfixIncrement = 0;

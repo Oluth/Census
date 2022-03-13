@@ -60,6 +60,7 @@
     <Compile Include="Service\Debug\DebugState.cs" />
     <Compile Include="Service\ExceptionService.cs" />
     <Compile Include="Service\IOService.cs" />
+    <Compile Include="Service\VersionService.cs" />
     <Compile Include="UI\UICensusWindow.cs" />
     <Compile Include="UI\Windows\PopPyramidWindow.cs" />
     <Compile Include="Util\Demography\DemographyUtil.cs" />

@@ -1,6 +1,7 @@
 ﻿using ICities;
 using Census.Manager;
 using Census.UI;
+using Census.Service;
 
 namespace Census
 {
@@ -10,13 +11,12 @@ namespace Census
     /// </summary>
     public sealed class Entry : IUserMod, ILoadingExtension, IThreadingExtension
     {
-        private static string ver = "0.0.0-alpha.2";
         private int frameBuffer = 120;
         private int frameBufferCount = 0;
 
-        string IUserMod.Name => string.Format("Census [{0}]", ver);
+        string IUserMod.Name => string.Format("Census [{0}]", VersionService.CensusVersion);
 
-        string IUserMod.Description => "[Alpha Preview] A Cities: Skylines demography tool. FOR TESTING PURPOSES ONLY!";
+        string IUserMod.Description => "Supervise your city demography.";
 
         public void OnCreated(ILoading loading) {
             Service.DebugService.Log(Service.Debug.DebugState.info, "Created.");

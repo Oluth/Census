@@ -49,7 +49,7 @@ namespace Census
                 Service.DebugService.Log(Service.Debug.DebugState.finest, "Refresh population window...");
                 PopPyramidWindow instance = PopPyramidWindow.Instance;
                 Service.DebugService.Log(Service.Debug.DebugState.finest, "Fetched PopPyramidWindow instance.");
-                instance.PrintMakeshiftPopGraph();
+                instance.PrintPopGraph();
                 frameBufferCount = 0;
             }
         }

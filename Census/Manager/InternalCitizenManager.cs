@@ -41,7 +41,10 @@ namespace Census.Manager
 
         private CitizenManager refManager = CitizenManager.instance;
 
-        public const byte REAL_AGEYEARS_PER_INGAME_AGE = 3;
+        // MAX_CITIZEN_AGE since C:S 1.14. The constant in Citizen is false since then.
+
+        public const int MAX_CITIZEN_AGE = 400;
+        public const float REAL_AGEYEARS_PER_INGAME_AGE = 3.5f;
 
         /// <summary>
         /// Prints a list of all CitizenUnit sizes as a string. For Debug purposes only.

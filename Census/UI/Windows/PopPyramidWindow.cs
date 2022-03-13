@@ -117,7 +117,7 @@ namespace Census.UI
             tableFrame.autoLayoutDirection = LayoutDirection.Vertical;
             tableFrame.autoLayoutPadding = new RectOffset(70,70,-5,0);
 
-            PrintMakeshiftPopGraph();
+            PrintPopGraph();
             //UILabel text = AddUIComponent(typeof(UILabel)) as UILabel;
 
 
@@ -132,7 +132,7 @@ namespace Census.UI
         }
 
 
-        public void PrintMakeshiftPopGraph()
+        public void PrintPopGraph()
         {
             DebugService.Log(DebugState.fine, "Get array of Citizen ages.");
             int[] ages = DemographyUtil.GetAgeBreakdown(DemographyUtil.AgeBreakdownMode.Inhabitant_All);

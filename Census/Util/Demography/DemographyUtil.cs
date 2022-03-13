@@ -86,7 +86,7 @@ namespace Census.Util.Demography
         /// <returns></returns>
         public static int[] GetAgeBreakdown(AgeBreakdownMode mode)
         {
-            int[] ageNumbers = new int[(Citizen.AGE_LIMIT_FINAL + 100) / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE];
+            int[] ageNumbers = new int[(int) Math.Ceiling(InternalCitizenManager.MAX_CITIZEN_AGE / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE)];
             List<Citizen> citizens = InternalCitizenManager.Instance.GetInhabitantCitizens();
             DebugService.Log(Service.Debug.DebugState.fine, "Got inhabitant citizens.");
 
@@ -107,10 +107,10 @@ namespace Census.Util.Demography
             }
             DebugService.Log(Service.Debug.DebugState.fine, "Filtered citizens by " + mode.ToString() + ".");
 
-
+            // Add age of the citizen into array.
             foreach (Citizen c in citizens)
             {
-                ageNumbers[c.Age / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE]++;
+                ageNumbers[(int) Math.Floor(c.Age / InternalCitizenManager.REAL_AGEYEARS_PER_INGAME_AGE)]++;
             }
             return ageNumbers;
         }

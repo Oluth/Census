@@ -152,7 +152,7 @@ namespace Census.UI
                     bar.size = new Vector2(this.makeshiftBarHeight, 0f);
                     bar.spriteName = "InfoDisplayFocused";
                     
-                    uint avgAge = (uint) Math.Round(this.makeshiftMaxAge - (i + 0.5) * step);
+                    uint avgAge = (uint) Math.Round(this.makeshiftMaxAge - i * step);
 
 
                     UILabel text = bar.AddUIComponent<UILabel>();
